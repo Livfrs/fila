@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="../fila/style.css" />
+</head>
+<body>
+    <div class="login-container">
+        <form id="loginForm" action="login.php" method="POST">
+            <h2>Login</h2>
+            <h4>Fila de Prioridade</h4>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="email" name="email" placeholder="E-mail" required />
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="senha" placeholder="Senha" required />
+            </div>
+            <button type="submit" class="btn-entrar">Entrar</button>   
+            <p>Não tem uma conta? <a href="cadastro.html">Registrar</a></p>
+        </form>
+    </div>
+</body>
+</html>

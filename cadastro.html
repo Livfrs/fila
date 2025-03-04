@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../fila/style.css">
+    <title>Cadastro</title>
+</head>
+<body>
+    <h1>Fila de Prioridade</h1>
+    <div class="Cadastro">
+        <h2>Cadastro</h2>
+        <p>Preencha os campos abaixo para criar sua conta</p>
+        <form id="cadastroForm" action="cadastro.php" method="POST" onsubmit="return validarCadastro()">
+            <input type="text" placeholder="Usuário" name="nome" id="nome" required>
+            <input type="email" placeholder="nome@gmail.com" name="email" id="email" required>
+            <input type="password" placeholder="Senha" name="senha" id="senha" required>
+            <input type="password" placeholder="Confirmar senha" name="confirmar_senha" id="confirmar_senha" required>
+            <button type="submit" class="btn-entrar">Cadastrar</button>   
+        </form>
+        <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
+    </div>
+
+    <!-- Referência ao arquivo JavaScript externo -->
+    <script src="cadastro.js"></script>
+</body>
+</html>

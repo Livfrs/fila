@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fila de Prioridade</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="fila.js" defer></script> 
+  </head>
+  <body>
+    <div class="container">
+      <h2>Fila de Prioridade</h2>
+      <input type="text" id="nome" placeholder="Nome" />
+
+      <select id="tipoPessoa" onchange="mostrarCidInput()">
+        <option value="comum">Comum</option>
+        <option value="deficiencia">Pessoa com Deficiência</option>
+        <option value="autista">Pessoa com Transtorno do Espectro Autista</option>
+        <option value="idoso">Idoso (60 anos ou mais)</option>
+        <option value="gestante">Gestante</option>
+        <option value="lactante">Lactante</option>
+        <option value="crianca_colo">Pessoa com Criança de Colo</option>
+        <option value="obeso">Obeso</option>
+        <option value="mobilidade">Pessoa com Mobilidade Reduzida</option>
+        <option value="doador_sangue">Doador de Sangue</option>
+        <option value="outro">Outro</option>
+      </select>
+
+      <div id="cidInput" style="display: none">
+        <label for="cid">Informe o CID (se aplicável):</label>
+        <input type="text" id="cid" placeholder="Código CID" />
+      </div>
+
+      <div class="button-container">
+        <button onclick="adicionarFila()">Adicionar à Fila</button>
+      </div>
+
+      <h3>Fila Atual</h3>
+      <ul id="fila"></ul>
+
+      <div class="button-container">
+        <button onclick="chamarPessoa()">Chamar Pessoa</button>
+      </div>
+
+      
+      <div class="button-container">
+        <button id="feedbackButton" onclick="window.location.href='../fila/formulario.html';">Feedback</button>
+      </div>
+
+      <div id="statusAtendimento"></div> 
+    </div>
+  </body>
+</html>
