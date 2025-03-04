@@ -4,32 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Formulário de Feedback</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="fila.css" />
   </head>
   <body>
-    <div class="container">
-      <h2 class="titulo-feedback">Deixe seu Feedback</h2>
-      <form id="feedbackForm">
-        <label for="nome" class="label-form">Nome:</label>
-        <input type="text" id="nome" class="input-form" required />
-        
-        <label for="dataAtendimento" class="label-form">Data do Atendimento:</label>
-        <input type="date" id="dataAtendimento" class="input-form" required />
-        
-        <label for="tempoEspera" class="label-form">Tempo de Espera (minutos):</label>
-        <input type="number" id="tempoEspera" class="input-form" required />
-        
-        <label for="profissionais" class="label-form">Profissionais Envolvidos:</label>
-        <input type="text" id="profissionais" class="input-form" required />
-        
-        <label for="comentario" class="label-form">Comentário:</label>
-        <textarea id="comentario" class="textarea-form" rows="4" required></textarea>
-        
-        <button type="submit" class="btn-submit">Enviar</button>
+    <div class="container2">
+      <h1>Enviar Feedback</h1>
+      <form id="feedbackForm" action="formulario.php" method="POST">
+        <div class="input-group">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required />
+        </div>
+
+
+        <div class="input-group">
+          <label for="prioridade">Tipo de Prioridade:</label>
+          <select id="prioridade" name="prioridade" required>
+            <option value="" disabled selected>Selecione uma opção</option>
+            <option value="comum">Comum</option>
+            <option value="deficiencia">Pessoa com Deficiência</option>
+            <option value="autista">Pessoa com Transtorno do Espectro Autista</option>
+            <option value="idoso">Idoso (60 anos ou mais)</option>
+            <option value="gestante">Gestante</option>
+            <option value="lactante">Lactante</option>
+            <option value="crianca_colo">Pessoa com Criança de Colo</option>
+            <option value="obeso">Obeso</option>
+            <option value="mobilidade">Pessoa com Mobilidade Reduzida</option>
+            <option value="doador_sangue">Doador de Sangue</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="dataAtendimento">Data do Atendimento:</label>
+          <input type="date" id="dataAtendimento" name="dataAtendimento" required />
+        </div>
+        <div class="input-group">
+          <label for="profissionais">Profissionais Envolvidos:</label>
+          <input
+            type="text"
+            id="profissionais"
+            name="profissionais"
+            placeholder="Digite os nomes dos profissionais"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="mensagem">Mensagem:</label>
+          <textarea
+            id="mensagem"
+            name="mensagem"
+            rows="5"
+            placeholder="Digite sua mensagem de feedback"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit">Enviar Feedback</button>
       </form>
-      <p id="mensagem" class="mensagem-feedback" style="color: green; display: none;">Obrigado pelo seu feedback!</p>
     </div>
-    
-    <script src="formulario.js"></script>
   </body>
 </html>
+</form>

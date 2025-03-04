@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fila de Prioridade</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="fila.js" defer></script> 
+    <link rel="stylesheet" href="fila.css" />
+    <script src="fila.js" defer></script>
   </head>
   <body>
     <div class="container">
       <h2>Fila de Prioridade</h2>
+
       <input type="text" id="nome" placeholder="Nome" />
 
       <select id="tipoPessoa" onchange="mostrarCidInput()">
@@ -35,19 +36,29 @@
         <button onclick="adicionarFila()">Adicionar à Fila</button>
       </div>
 
-      <h3>Fila Atual</h3>
+      <h2>Fila Atual</h2>
       <ul id="fila"></ul>
 
       <div class="button-container">
         <button onclick="chamarPessoa()">Chamar Pessoa</button>
       </div>
 
-      
-      <div class="button-container">
-        <button id="feedbackButton" onclick="window.location.href='../fila/formulario.html';">Feedback</button>
+      <div id="statusAtendimento">
+        <h3>Status Atual</h3>
+        <p><strong>Próximo Atendimento:</strong> <span id="proximoAtendimento">Nenhum</span></p>
+        <p><strong>Atendimento Atual:</strong> <span id="atendimentoAtual">Nenhum</span></p>
       </div>
 
-      <div id="statusAtendimento"></div> 
+      <div class="button-container">
+        <button id="feedbackButton" onclick="window.location.href='../fila/formulario.html';">Feedback</button>
+        <button id="concluidosButton" onclick="window.location.href='concluidos.html';">Atendimentos Concluídos</button>
+      </div>
+
+      <!-- Contêiner para exibir a lista de concluídos -->
+      <div id="concluidosContainer" style="display: none;">
+        <h3>Atendimentos Concluídos</h3>
+        <ul id="concluidos"></ul>
+      </div>
     </div>
   </body>
 </html>
