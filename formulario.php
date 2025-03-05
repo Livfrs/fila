@@ -24,7 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssss", $nome, $prioridade, $dataAtendimento, $profissionais, $mensagem);
 
     if ($stmt->execute()) {
-        echo "Feedback enviado com sucesso!";
+        header("Location: visualizar_form.php");
+        exit();        
     } else {
         echo "Erro ao enviar feedback: " . $conn->error;
     }
