@@ -31,8 +31,9 @@
     font-size: 28px;
   }
   
-  /* Estilização do feedback */
-  .feedback-item {
+  /* Estilização do feedback e registro */
+  .registro-item,
+  .feedback-item{
     background: #ffffff;
     border-radius: 10px;
     padding: 15px;
@@ -42,6 +43,7 @@
     text-align: left;
   }
   
+  .registro-item h3,
   .feedback-item h3 {
     color: black;
     font-size: 18px;
@@ -49,6 +51,7 @@
     
   }
   
+  .registro-item p,
   .feedback-item p {
     color: #333;
     font-size: 16px;

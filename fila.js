@@ -19,14 +19,19 @@ class Queue {
       comum: 1, // "Comum" tem menor prioridade
     };
 
-    // Calculando a prioridade do novo elemento
-    const prioridadePessoa = prioridades[element.tipoPessoa];
+    // Ajustando a prioridade para idosos com mais de 80 anos e crianças de até 1 ano
+    if (element.tipoPessoa === "idoso" && element.maisDe80 === "sim") {
+      element.prioridade = 3; // Prioridade máxima para idosos com mais de 80 anos
+    } else if (element.tipoPessoa === "crianca_colo" && element.criancaAte1Ano === "sim") {
+      element.prioridade = 3; // Prioridade máxima para crianças de até 1 ano
+    } else {
+      element.prioridade = prioridades[element.tipoPessoa];
+    }
 
     // Inserindo a pessoa na fila de acordo com a prioridade
     let inserido = false;
     for (let i = 0; i < this.items.length; i++) {
-      // Se a pessoa a ser inserida tem maior ou igual prioridade que a da posição i
-      if (prioridades[this.items[i].tipoPessoa] < prioridadePessoa) {
+      if (this.items[i].prioridade < element.prioridade) {
         this.items.splice(i, 0, element); // Insere na posição i
         inserido = true;
         break;
@@ -59,6 +64,23 @@ class Queue {
   getItems() {
     return [...this.items]; // Retorna uma cópia da fila
   }
+
+  atualizarPrioridades() {
+    const TEMPO_LIMITE = 240 * 1000; // 60 segundos em milissegundos
+    const agora = new Date();
+
+    // Atualiza a prioridade de quem está há mais de 240 segundos na fila
+    this.items.forEach((pessoa) => {
+      const tempoEspera = agora - pessoa.horarioEntrada;
+      if (tempoEspera > TEMPO_LIMITE) {
+        pessoa.prioridade = 4; // Prioridade máxima para quem esperou mais de 240 segundos
+      }
+    });
+    //Segundo a legislação o tempo limite deve ser de 40 minutos, mas para testes de funcionalidades mais rápido, o tempo limite escolhido foi 4 minutos (240 segundos)
+
+    // Reordena a fila com base nas novas prioridades
+    this.items.sort((a, b) => b.prioridade - a.prioridade);
+  }
 }
 
 // Criando uma instância da fila de espera
@@ -67,34 +89,66 @@ const filaEspera = new Queue();
 // Criando uma instância da fila de concluídos
 const filaConcluidos = new Queue();
 
-function mostrarCidInput() {
+function mostrarPerguntasAdicionais() {
   const tipoPessoa = document.getElementById("tipoPessoa").value;
+  const perguntasAdicionais = document.getElementById("perguntasAdicionais");
+  const perguntaIdoso = document.getElementById("perguntaIdoso");
+  const perguntaCriancaColo = document.getElementById("perguntaCriancaColo");
   const cidInput = document.getElementById("cidInput");
-  cidInput.style.display = tipoPessoa === "outro" ? "block" : "none";
+
+  if (tipoPessoa === "idoso") {
+    perguntasAdicionais.style.display = "block";
+    perguntaIdoso.style.display = "block";
+    perguntaCriancaColo.style.display = "none";
+    cidInput.style.display = "none"; // Oculta o campo do CID
+  } else if (tipoPessoa === "crianca_colo") {
+    perguntasAdicionais.style.display = "block";
+    perguntaIdoso.style.display = "none";
+    perguntaCriancaColo.style.display = "block";
+    cidInput.style.display = "none"; // Oculta o campo do CID
+  } else if (tipoPessoa === "outro") {
+    perguntasAdicionais.style.display = "none"; // Oculta as perguntas adicionais
+    cidInput.style.display = "block"; // Exibe o campo do CID
+  } else {
+    perguntasAdicionais.style.display = "none";
+    cidInput.style.display = "none"; // Oculta o campo do CID
+  }
 }
 
 function adicionarFila() {
   const nome = document.getElementById("nome").value;
   const tipoPessoa = document.getElementById("tipoPessoa").value;
   const cid = document.getElementById("cid").value;
+  const maisDe80 = document.querySelector('input[name="maisDe80"]:checked')?.value || "nao";
+  const criancaAte1Ano = document.querySelector('input[name="criancaAte1Ano"]:checked')?.value || "nao";
 
   if (nome === "") {
     alert("Por favor, insira o nome!");
     return;
   }
 
+  // Validação do CID apenas para o tipo "Outro"
+  if (tipoPessoa === "outro" && cid === "") {
+    alert("Por favor, insira o CID!");
+    return;
+  }
+
   const pessoa = {
     nome,
     tipoPessoa,
-    cid: tipoPessoa === "outro" ? cid : "",
+    cid: tipoPessoa === "outro" ? cid : "", // Armazena o CID apenas se for "Outro"
+    maisDe80: tipoPessoa === "idoso" ? maisDe80 : "nao",
+    criancaAte1Ano: tipoPessoa === "crianca_colo" ? criancaAte1Ano : "nao",
     status: 'esperando', // Definindo o status inicial como 'esperando'
     horarioEntrada: new Date(), // Registra o horário de entrada na fila
   };
 
   filaEspera.enqueue(pessoa); // Adiciona à fila de espera de forma ordenada
 
+  // Limpa os campos após adicionar à fila
   document.getElementById("nome").value = "";
   document.getElementById("cid").value = "";
+  document.querySelectorAll('input[type="radio"]').forEach((radio) => (radio.checked = false));
 
   mostrarFila();
   alert("Pessoa adicionada à fila!");
@@ -103,6 +157,9 @@ function adicionarFila() {
 function mostrarFila() {
   const filaUl = document.getElementById("fila");
   filaUl.innerHTML = "";
+
+  // Atualiza as prioridades antes de exibir a fila
+  filaEspera.atualizarPrioridades();
 
   if (filaEspera.isEmpty()) {
     filaUl.innerHTML = "<li>Fila vazia</li>";
@@ -115,6 +172,15 @@ function mostrarFila() {
     if (pessoa.cid) {
       li.textContent += ` (CID: ${pessoa.cid})`;
     }
+    if (pessoa.tipoPessoa === "idoso" && pessoa.maisDe80 === "sim") {
+      li.textContent += " (80+ anos)";
+    }
+    if (pessoa.tipoPessoa === "crianca_colo" && pessoa.criancaAte1Ano === "sim") {
+      li.textContent += " (Criança até 1 ano)";
+    }
+    // Mostra o tempo de espera
+    const tempoEspera = Math.floor((new Date() - pessoa.horarioEntrada) / 1000); // Tempo em segundos
+    li.textContent += ` - Espera: ${tempoEspera} segundos`;
     filaUl.appendChild(li);
   });
 
@@ -144,7 +210,7 @@ function chamarPessoa() {
   salvarConcluidosNoLocalStorage(pessoaChamada);
 
   const statusAtendimento = document.getElementById("atendimentoAtual");
-  statusAtendimento.textContent = ` ${pessoaChamada.nome} - ${pessoaChamada.tipoPessoa}`;
+  statusAtendimento.textContent = `${pessoaChamada.nome} - ${pessoaChamada.tipoPessoa}`;
 
   mostrarFila(); // Atualiza a fila de espera na tela
   atualizarStatusAtendimento(); // Atualiza o próximo atendimento
@@ -177,17 +243,29 @@ function mostrarConcluidos() {
   const concluidosUl = document.getElementById("concluidos");
   concluidosUl.innerHTML = "";
 
-  if (filaConcluidos.isEmpty()) {
+  // Recupera os dados do localStorage
+  const concluidos = JSON.parse(localStorage.getItem("filaConcluidos")) || [];
+
+  if (concluidos.length === 0) {
     concluidosUl.innerHTML = "<li>Nenhum atendimento concluído</li>";
     return;
   }
 
-  filaConcluidos.getItems().forEach((pessoa, index) => {
+  concluidos.forEach((pessoa, index) => {
     const li = document.createElement("li");
     li.textContent = `Atendimento ${index + 1}: ${pessoa.nome} - ${pessoa.tipoPessoa} - ${pessoa.tempoDemora} segundos`;
     if (pessoa.cid) {
       li.textContent += ` (CID: ${pessoa.cid})`;
     }
+    if (pessoa.tipoPessoa === "idoso" && pessoa.maisDe80 === "sim") {
+      li.textContent += " (80+ anos)";
+    }
+    if (pessoa.tipoPessoa === "crianca_colo" && pessoa.criancaAte1Ano === "sim") {
+      li.textContent += " (Criança até 1 ano)";
+    }
     concluidosUl.appendChild(li);
   });
+
+  // Exibe o contêiner de concluídos
+  document.getElementById("concluidosContainer").style.display = "block";
 }

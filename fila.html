@@ -11,9 +11,11 @@
     <div class="container">
       <h2>Fila de Prioridade</h2>
 
-      <input type="text" id="nome" placeholder="Nome" />
+      <!-- Campo para o nome -->
+      <input type="text" id="nome" placeholder="ID" />
 
-      <select id="tipoPessoa" onchange="mostrarCidInput()">
+      <!-- Seleção do tipo de pessoa -->
+      <select id="tipoPessoa" onchange="mostrarPerguntasAdicionais()">
         <option value="comum">Comum</option>
         <option value="deficiencia">Pessoa com Deficiência</option>
         <option value="autista">Pessoa com Transtorno do Espectro Autista</option>
@@ -27,31 +29,52 @@
         <option value="outro">Outro</option>
       </select>
 
-      <div id="cidInput" style="display: none">
-        <label for="cid">Informe o CID (se aplicável):</label>
-        <input type="text" id="cid" placeholder="Código CID" />
+      <!-- Perguntas adicionais para idosos e crianças de colo -->
+      <div id="perguntasAdicionais" style="display: none;">
+        <div id="perguntaIdoso" style="display: none;">
+          <label>Tem 80 anos ou mais?</label>
+          <label><input type="radio" name="maisDe80" value="sim"> Sim</label>
+          <label><input type="radio" name="maisDe80" value="nao"> Não</label>
+        </div>
+        <div id="perguntaCriancaColo" style="display: none;">
+          <label>A criança tem até 1 ano?</label>
+          <label><input type="radio" name="criancaAte1Ano" value="sim"> Sim</label>
+          <label><input type="radio" name="criancaAte1Ano" value="nao"> Não</label>
+        </div>
       </div>
 
+      <!-- Campo para o CID (se aplicável) -->
+      <div id="cidInput" style="display: none">
+        <label for="cid">Informe o CID (se aplicável):</label>
+        <input type="text" id="cid" class="cid-input" placeholder="Código CID" />
+      </div>
+
+      <!-- Botão para adicionar à fila -->
       <div class="button-container">
         <button onclick="adicionarFila()">Adicionar à Fila</button>
       </div>
 
+      <!-- Lista da fila atual -->
       <h2>Fila Atual</h2>
       <ul id="fila"></ul>
 
+      <!-- Botão para chamar a próxima pessoa -->
       <div class="button-container">
         <button onclick="chamarPessoa()">Chamar Pessoa</button>
       </div>
 
+      <!-- Status de atendimento -->
       <div id="statusAtendimento">
         <h3>Status Atual</h3>
         <p><strong>Próximo Atendimento:</strong> <span id="proximoAtendimento">Nenhum</span></p>
         <p><strong>Atendimento Atual:</strong> <span id="atendimentoAtual">Nenhum</span></p>
       </div>
 
+      <!-- Botões para feedback e atendimentos concluídos -->
       <div class="button-container">
-        <button id="feedbackButton" onclick="window.location.href='../fila/formulario.html';">Feedback</button>
+        <button id="registroButton" onclick="window.location.href='../fila/registro.html';">Registrar  Atendimentos Detalhados</button>
         <button id="concluidosButton" onclick="window.location.href='concluidos.html';">Atendimentos Concluídos</button>
+        <button id="feedbackButton" onclick="window.location.href='feedback.html';">Feedbacks</button>
       </div>
 
       <!-- Contêiner para exibir a lista de concluídos -->

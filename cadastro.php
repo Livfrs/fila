@@ -31,7 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sss", $nome, $email, $senha_hash);  // Adicionando o e-mail aqui
 
     if ($stmt->execute()) {
-        echo "Usuário cadastrado com sucesso!";
+        header("Location: fila.html");
+        exit();
+
     } else {
         echo "Erro ao cadastrar: " . $conn->error;
     }
