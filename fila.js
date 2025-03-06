@@ -123,7 +123,7 @@ function adicionarFila() {
   const criancaAte1Ano = document.querySelector('input[name="criancaAte1Ano"]:checked')?.value || "nao";
 
   if (nome === "") {
-    alert("Por favor, insira o nome!");
+    alert("Por favor, insira o id!");
     return;
   }
 
@@ -168,7 +168,15 @@ function mostrarFila() {
 
   filaEspera.getItems().forEach((pessoa, index) => {
     const li = document.createElement("li");
-    li.textContent = `Posição ${index + 1}: ${pessoa.nome} - ${pessoa.tipoPessoa} - ${pessoa.status}`;
+    
+    // Substituindo o tipoPessoa "crianca_colo" por "Criança de Colo"
+    let tipoPessoaDisplay = pessoa.tipoPessoa;
+    if (tipoPessoaDisplay === "crianca_colo") {
+      tipoPessoaDisplay = "Criança de Colo";
+    }
+    
+    li.textContent = `Posição ${index + 1}: ${pessoa.nome} - ${tipoPessoaDisplay} - ${pessoa.status}`;
+    
     if (pessoa.cid) {
       li.textContent += ` (CID: ${pessoa.cid})`;
     }
@@ -178,12 +186,14 @@ function mostrarFila() {
     if (pessoa.tipoPessoa === "crianca_colo" && pessoa.criancaAte1Ano === "sim") {
       li.textContent += " (Criança até 1 ano)";
     }
+    
     // Mostra o tempo de espera
     const tempoEspera = Math.floor((new Date() - pessoa.horarioEntrada) / 1000); // Tempo em segundos
     li.textContent += ` - Espera: ${tempoEspera} segundos`;
+    
     filaUl.appendChild(li);
   });
-
+  
   atualizarStatusAtendimento(); // Atualiza o status do próximo atendimento
 }
 
@@ -210,11 +220,19 @@ function chamarPessoa() {
   salvarConcluidosNoLocalStorage(pessoaChamada);
 
   const statusAtendimento = document.getElementById("atendimentoAtual");
-  statusAtendimento.textContent = `${pessoaChamada.nome} - ${pessoaChamada.tipoPessoa}`;
+
+  // Verifica e substitui "crianca_colo" por "Criança de Colo"
+  let tipoPessoaDisplay = pessoaChamada.tipoPessoa;
+  if (tipoPessoaDisplay === "crianca_colo") {
+    tipoPessoaDisplay = "Criança de Colo";
+  }
+
+  statusAtendimento.textContent = `${pessoaChamada.nome} - ${tipoPessoaDisplay}`;
 
   mostrarFila(); // Atualiza a fila de espera na tela
   atualizarStatusAtendimento(); // Atualiza o próximo atendimento
 }
+
 
 function salvarConcluidosNoLocalStorage(pessoa) {
   // Recupera os dados existentes do localStorage ou cria um array vazio
@@ -231,13 +249,18 @@ function atualizarStatusAtendimento() {
   const proximoAtendimento = filaEspera.peek();
   const proximoAtendimentoElement = document.getElementById("proximoAtendimento");
 
-  // Atualiza o "Próximo Atendimento"
+  // Verifica se o próximo atendimento existe e substitui "crianca_colo" por "Criança de Colo"
   if (proximoAtendimento) {
-    proximoAtendimentoElement.textContent = `${proximoAtendimento.nome} - ${proximoAtendimento.tipoPessoa}`;
+    let tipoPessoaDisplay = proximoAtendimento.tipoPessoa;
+    if (tipoPessoaDisplay === "crianca_colo") {
+      tipoPessoaDisplay = "Criança de Colo";
+    }
+    proximoAtendimentoElement.textContent = `${proximoAtendimento.nome} - ${tipoPessoaDisplay}`;
   } else {
     proximoAtendimentoElement.textContent = "Nenhum";
   }
 }
+
 
 function mostrarConcluidos() {
   const concluidosUl = document.getElementById("concluidos");

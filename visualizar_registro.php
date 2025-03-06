@@ -33,7 +33,8 @@
                     echo "</div>";
                 }
             } else {
-                echo "<p>Nenhum registro encontrado.</p>";
+                echo '<p id="mensagem-erro">Nenhum registro encontrado.</p>';
+                
             }
             $conn->close();
             ?>

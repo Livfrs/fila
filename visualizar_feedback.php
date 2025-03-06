@@ -35,7 +35,7 @@
                 echo "</div>";
             }
         } else {
-            echo "<p>Nenhum feedback encontrado.</p>";
+            echo '<p id="mensagem-erro">Nenhum feedback encontrado.</p>';
         }
 
         $conn->close();

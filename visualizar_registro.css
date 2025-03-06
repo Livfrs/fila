@@ -73,4 +73,12 @@
   .back-button:hover {
     background: #2c6e49;
   }
+  #mensagem-erro {
+    color: rgb(164, 6, 6);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
   
