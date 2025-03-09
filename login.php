@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = $_POST["senha"];
 
     // Buscando usuário pelo e-mail
-    $sql = "SELECT id, nome, senha FROM usuarios WHERE email = ?";
+    $sql = "SELECT id, senha FROM usuarios WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();

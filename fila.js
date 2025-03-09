@@ -1,10 +1,9 @@
 class Queue {
   constructor() {
-    this.items = [];
+    this.items = this.carregarFila() || []; // Carrega a fila do localStorage ao inicializar
   }
 
   enqueue(element) {
-    // Definindo prioridades
     const prioridades = {
       deficiencia: 2,
       autista: 2,
@@ -42,11 +41,15 @@ class Queue {
       // Caso a pessoa tenha menor prioridade ou seja a última, adiciona no final
       this.items.push(element);
     }
+
+    this.salvarFila(); // Salva a fila no localStorage
   }
 
   dequeue() {
     if (this.isEmpty()) return null;
-    return this.items.shift(); // Remove e retorna o primeiro da fila
+    const elementoRemovido = this.items.shift(); // Remove e retorna o primeiro da fila
+    this.salvarFila(); // Salva a fila no localStorage
+    return elementoRemovido;
   }
 
   isEmpty() {
@@ -66,20 +69,39 @@ class Queue {
   }
 
   atualizarPrioridades() {
-    const TEMPO_LIMITE = 240 * 1000; // 60 segundos em milissegundos
+    const TEMPO_LIMITE = 240 * 1000; // 4 minutos em milissegundos
     const agora = new Date();
 
-    // Atualiza a prioridade de quem está há mais de 240 segundos na fila
+    // Atualiza a prioridade de quem está há mais de 4 minutos na fila, exceto para "comum"
     this.items.forEach((pessoa) => {
-      const tempoEspera = agora - pessoa.horarioEntrada;
-      if (tempoEspera > TEMPO_LIMITE) {
-        pessoa.prioridade = 4; // Prioridade máxima para quem esperou mais de 240 segundos
+      if (pessoa.tipoPessoa !== "comum") { // Ignora pessoas do tipo "comum"
+        const tempoEspera = agora - pessoa.horarioEntrada;
+        if (tempoEspera > TEMPO_LIMITE) {
+          pessoa.prioridade = 4; // Prioridade máxima para quem esperou mais de 4 minutos
+        }
       }
     });
-    //Segundo a legislação o tempo limite deve ser de 40 minutos, mas para testes de funcionalidades mais rápido, o tempo limite escolhido foi 4 minutos (240 segundos)
 
     // Reordena a fila com base nas novas prioridades
     this.items.sort((a, b) => b.prioridade - a.prioridade);
+    this.salvarFila(); // Salva a fila no localStorage
+  }
+
+  salvarFila() {
+    localStorage.setItem("filaEspera", JSON.stringify(this.items)); // Salva a fila no localStorage
+  }
+
+  carregarFila() {
+    const filaSalva = localStorage.getItem("filaEspera"); // Carrega a fila do localStorage
+    if (filaSalva) {
+      const fila = JSON.parse(filaSalva);
+      // Converte o horarioEntrada de string para Date
+      fila.forEach((pessoa) => {
+        pessoa.horarioEntrada = new Date(pessoa.horarioEntrada);
+      });
+      return fila;
+    }
+    return null;
   }
 }
 
@@ -89,6 +111,7 @@ const filaEspera = new Queue();
 // Criando uma instância da fila de concluídos
 const filaConcluidos = new Queue();
 
+// Função para mostrar perguntas adicionais com base no tipo de pessoa selecionado
 function mostrarPerguntasAdicionais() {
   const tipoPessoa = document.getElementById("tipoPessoa").value;
   const perguntasAdicionais = document.getElementById("perguntasAdicionais");
@@ -115,6 +138,7 @@ function mostrarPerguntasAdicionais() {
   }
 }
 
+// Função para adicionar uma pessoa à fila
 function adicionarFila() {
   const nome = document.getElementById("nome").value;
   const tipoPessoa = document.getElementById("tipoPessoa").value;
@@ -123,7 +147,7 @@ function adicionarFila() {
   const criancaAte1Ano = document.querySelector('input[name="criancaAte1Ano"]:checked')?.value || "nao";
 
   if (nome === "") {
-    alert("Por favor, insira o id!");
+    alert("Por favor, insira o nome!");
     return;
   }
 
@@ -139,7 +163,7 @@ function adicionarFila() {
     cid: tipoPessoa === "outro" ? cid : "", // Armazena o CID apenas se for "Outro"
     maisDe80: tipoPessoa === "idoso" ? maisDe80 : "nao",
     criancaAte1Ano: tipoPessoa === "crianca_colo" ? criancaAte1Ano : "nao",
-    status: 'esperando', // Definindo o status inicial como 'esperando'
+    status: "esperando", // Definindo o status inicial como 'esperando'
     horarioEntrada: new Date(), // Registra o horário de entrada na fila
   };
 
@@ -150,10 +174,11 @@ function adicionarFila() {
   document.getElementById("cid").value = "";
   document.querySelectorAll('input[type="radio"]').forEach((radio) => (radio.checked = false));
 
-  mostrarFila();
+  mostrarFila(); // Atualiza a exibição da fila
   alert("Pessoa adicionada à fila!");
 }
 
+// Função para exibir a fila na tela
 function mostrarFila() {
   const filaUl = document.getElementById("fila");
   filaUl.innerHTML = "";
@@ -168,15 +193,15 @@ function mostrarFila() {
 
   filaEspera.getItems().forEach((pessoa, index) => {
     const li = document.createElement("li");
-    
+
     // Substituindo o tipoPessoa "crianca_colo" por "Criança de Colo"
     let tipoPessoaDisplay = pessoa.tipoPessoa;
     if (tipoPessoaDisplay === "crianca_colo") {
       tipoPessoaDisplay = "Criança de Colo";
     }
-    
+
     li.textContent = `Posição ${index + 1}: ${pessoa.nome} - ${tipoPessoaDisplay} - ${pessoa.status}`;
-    
+
     if (pessoa.cid) {
       li.textContent += ` (CID: ${pessoa.cid})`;
     }
@@ -186,17 +211,18 @@ function mostrarFila() {
     if (pessoa.tipoPessoa === "crianca_colo" && pessoa.criancaAte1Ano === "sim") {
       li.textContent += " (Criança até 1 ano)";
     }
-    
+
     // Mostra o tempo de espera
     const tempoEspera = Math.floor((new Date() - pessoa.horarioEntrada) / 1000); // Tempo em segundos
     li.textContent += ` - Espera: ${tempoEspera} segundos`;
-    
+
     filaUl.appendChild(li);
   });
-  
+
   atualizarStatusAtendimento(); // Atualiza o status do próximo atendimento
 }
 
+// Função para chamar a próxima pessoa da fila
 function chamarPessoa() {
   if (filaEspera.isEmpty()) {
     alert("Não há pessoas na fila.");
@@ -204,7 +230,7 @@ function chamarPessoa() {
   }
 
   const pessoaChamada = filaEspera.dequeue(); // Remove a pessoa com maior prioridade
-  pessoaChamada.status = 'concluído'; // Atualiza o status da pessoa chamada
+  pessoaChamada.status = "concluído"; // Atualiza o status da pessoa chamada
 
   // Calcula o tempo de demora na fila
   const horarioSaida = new Date();
@@ -233,23 +259,18 @@ function chamarPessoa() {
   atualizarStatusAtendimento(); // Atualiza o próximo atendimento
 }
 
-
+// Função para salvar os atendimentos concluídos no localStorage
 function salvarConcluidosNoLocalStorage(pessoa) {
-  // Recupera os dados existentes do localStorage ou cria um array vazio
   const concluidos = JSON.parse(localStorage.getItem("filaConcluidos")) || [];
-
-  // Adiciona a nova pessoa à lista de concluídos
   concluidos.push(pessoa);
-
-  // Salva a lista atualizada no localStorage
   localStorage.setItem("filaConcluidos", JSON.stringify(concluidos));
 }
 
+// Função para atualizar o status do próximo atendimento
 function atualizarStatusAtendimento() {
   const proximoAtendimento = filaEspera.peek();
   const proximoAtendimentoElement = document.getElementById("proximoAtendimento");
 
-  // Verifica se o próximo atendimento existe e substitui "crianca_colo" por "Criança de Colo"
   if (proximoAtendimento) {
     let tipoPessoaDisplay = proximoAtendimento.tipoPessoa;
     if (tipoPessoaDisplay === "crianca_colo") {
@@ -261,7 +282,7 @@ function atualizarStatusAtendimento() {
   }
 }
 
-
+// Função para exibir os atendimentos concluídos
 function mostrarConcluidos() {
   const concluidosUl = document.getElementById("concluidos");
   concluidosUl.innerHTML = "";
@@ -292,3 +313,9 @@ function mostrarConcluidos() {
   // Exibe o contêiner de concluídos
   document.getElementById("concluidosContainer").style.display = "block";
 }
+
+// Carrega a fila do localStorage ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+  filaEspera.items = filaEspera.carregarFila() || [];
+  mostrarFila(); // Exibe a fila carregada
+});

@@ -26,12 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
     // Inserir no banco de dados com o e-mail
-    $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO usuarios (id, email, senha) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $nome, $email, $senha_hash);  // Adicionando o e-mail aqui
 
     if ($stmt->execute()) {
-        header("Location: fila.html");
+        header("Location: index.html");
         exit();
 
     } else {
