@@ -69,7 +69,7 @@ class Queue {
   }
 
   atualizarPrioridades() {
-    const TEMPO_LIMITE = 60 * 1000; // 4 minutos em milissegundos
+    const TEMPO_LIMITE = 240 * 1000; // 4 minutos em milissegundos
     const agora = new Date();
   
     this.items.forEach((pessoa) => {
