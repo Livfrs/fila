@@ -69,23 +69,31 @@ class Queue {
   }
 
   atualizarPrioridades() {
-    const TEMPO_LIMITE = 240 * 1000; // 4 minutos em milissegundos
+    const TEMPO_LIMITE = 60 * 1000; // 4 minutos em milissegundos
     const agora = new Date();
-
-    // Atualiza a prioridade de quem está há mais de 4 minutos na fila, exceto para "comum"
+  
     this.items.forEach((pessoa) => {
-      if (pessoa.tipoPessoa !== "comum") { // Ignora pessoas do tipo "comum"
-        const tempoEspera = agora - pessoa.horarioEntrada;
-        if (tempoEspera > TEMPO_LIMITE) {
-          pessoa.prioridade = 4; // Prioridade máxima para quem esperou mais de 4 minutos
+      // Garante que horarioEntrada seja um objeto Date
+      if (!(pessoa.horarioEntrada instanceof Date)) {
+        pessoa.horarioEntrada = new Date(pessoa.horarioEntrada);
+      }
+  
+      const tempoEspera = agora - pessoa.horarioEntrada;
+  
+      if (tempoEspera > TEMPO_LIMITE && pessoa.tipoPessoa !== "comum") {
+        // Garante que a prioridade só aumente se for menor que 4
+        if (pessoa.prioridade < 4) {
+          pessoa.prioridade = 4;
         }
       }
     });
-
-    // Reordena a fila com base nas novas prioridades
+  
+    // Reordena a fila com base na prioridade (ordem decrescente)
     this.items.sort((a, b) => b.prioridade - a.prioridade);
-    this.salvarFila(); // Salva a fila no localStorage
+  
+    this.salvarFila(); // Salva a fila atualizada
   }
+  
 
   salvarFila() {
     localStorage.setItem("filaEspera", JSON.stringify(this.items)); // Salva a fila no localStorage
