@@ -1,49 +1,49 @@
 class Queue {
   constructor() {
-    this.items = this.carregarFila() || []; // Carrega a fila do localStorage ao inicializar
-  }
-
-  enqueue(element) {
-    const prioridades = {
+    this.items = this.carregarFila() || [];
+    this.prioridades = {
       deficiencia: 2,
       autista: 2,
       idoso: 2,
+      idoso_80mais: 3,
       gestante: 2,
       lactante: 2,
       crianca_colo: 2,
+      crianca_colo_1ano: 3,
       obeso: 2,
       mobilidade: 2,
       doador_sangue: 2,
       outro: 2,
-      comum: 1, // "Comum" tem menor prioridade
+      comum: 1,
     };
-
-    // Ajustando a prioridade para idosos com mais de 80 anos e crianças de até 1 ano
+  }
+  enqueue(element) {
+    // Ajustando tipoPessoa para garantir a prioridade correta
     if (element.tipoPessoa === "idoso" && element.maisDe80 === "sim") {
-      element.prioridade = 3; // Prioridade máxima para idosos com mais de 80 anos
+      element.tipoPessoa = "idoso_80mais";
     } else if (element.tipoPessoa === "crianca_colo" && element.criancaAte1Ano === "sim") {
-      element.prioridade = 3; // Prioridade máxima para crianças de até 1 ano
-    } else {
-      element.prioridade = prioridades[element.tipoPessoa];
+      element.tipoPessoa = "crianca_colo_1ano";
     }
-
-    // Inserindo a pessoa na fila de acordo com a prioridade
+  
+    // Definindo a prioridade com base no tipo atualizado
+    element.prioridade = this.prioridades[element.tipoPessoa] || 1; // Padrão é 1
+  
     let inserido = false;
     for (let i = 0; i < this.items.length; i++) {
       if (this.items[i].prioridade < element.prioridade) {
-        this.items.splice(i, 0, element); // Insere na posição i
+        this.items.splice(i, 0, element);
         inserido = true;
         break;
       }
     }
-
+  
     if (!inserido) {
-      // Caso a pessoa tenha menor prioridade ou seja a última, adiciona no final
       this.items.push(element);
     }
-
-    this.salvarFila(); // Salva a fila no localStorage
+  
+    this.salvarFila();
   }
+  
 
   dequeue() {
     if (this.isEmpty()) return null;
@@ -147,7 +147,7 @@ function adicionarFila() {
   const criancaAte1Ano = document.querySelector('input[name="criancaAte1Ano"]:checked')?.value || "nao";
 
   if (nome === "") {
-    alert("Por favor, insira o nome!");
+    alert("Por favor, insira o id!");
     return;
   }
 
@@ -196,9 +196,15 @@ function mostrarFila() {
 
     // Substituindo o tipoPessoa "crianca_colo" por "Criança de Colo"
     let tipoPessoaDisplay = pessoa.tipoPessoa;
+
     if (tipoPessoaDisplay === "crianca_colo") {
       tipoPessoaDisplay = "Criança de Colo";
+    } else if (tipoPessoaDisplay === "crianca_colo_1ano") {
+      tipoPessoaDisplay = "Criança de até um ano";
+    } else if (tipoPessoaDisplay === "idoso_80mais") {
+      tipoPessoaDisplay = "Idoso com mais de 80 anos";
     }
+
 
     li.textContent = `Posição ${index + 1}: ${pessoa.nome} - ${tipoPessoaDisplay} - ${pessoa.status}`;
 
@@ -249,9 +255,15 @@ function chamarPessoa() {
 
   // Verifica e substitui "crianca_colo" por "Criança de Colo"
   let tipoPessoaDisplay = pessoaChamada.tipoPessoa;
-  if (tipoPessoaDisplay === "crianca_colo") {
-    tipoPessoaDisplay = "Criança de Colo";
-  }
+
+    if (tipoPessoaDisplay === "crianca_colo") {
+      tipoPessoaDisplay = "Criança de Colo";
+    } else if (tipoPessoaDisplay === "crianca_colo_1ano") {
+      tipoPessoaDisplay = "Criança de até um ano";
+    } else if (tipoPessoaDisplay === "idoso_80mais") {
+      tipoPessoaDisplay = "Idoso com mais de 80 anos";
+    }
+
 
   statusAtendimento.textContent = `${pessoaChamada.nome} - ${tipoPessoaDisplay}`;
 
